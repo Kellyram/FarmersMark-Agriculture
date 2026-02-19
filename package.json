@@ -1,0 +1,12 @@
+{
+  "name": "farmersmark",
+  "private": true,
+  "packageManager": "pnpm@10.4.0",
+  "scripts": {
+    "install:all": "pnpm install",
+    "build": "pnpm -r build",
+    "dev:web": "pnpm --filter farmersmark-web dev",
+    "build:web": "pnpm --filter farmersmark-web build",
+    "build:functions": "pnpm --filter farmersmark-functions build"
+  }
+}
