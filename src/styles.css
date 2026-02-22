@@ -1,0 +1,153 @@
+:root {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --sidebar: #111827;
+  --border: #dbe3ee;
+  --text: #0f172a;
+  --muted: #64748b;
+  --assistant: #ffffff;
+  --user: #e0f2fe;
+  --accent: #0b57d0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top right, #e2efff 0%, var(--bg) 48%);
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.sidebar {
+  background: var(--sidebar);
+  color: #e2e8f0;
+  padding: 1.25rem;
+  border-right: 1px solid #1f2937;
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.meta {
+  margin: 0;
+  color: #9fb0c8;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.chat {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100vh;
+}
+
+.messages {
+  overflow-y: auto;
+  padding: 2rem clamp(1rem, 3vw, 3rem);
+  display: grid;
+  gap: 1rem;
+}
+
+.bubble {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  max-width: min(920px, 100%);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.bubble.user {
+  margin-left: auto;
+  background: var(--user);
+}
+
+.bubble.assistant {
+  background: var(--assistant);
+}
+
+.bubble header {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.bubble p {
+  margin: 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.sources {
+  margin: 0.8rem 0 0;
+  padding-left: 1rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.composer {
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  padding: 0.9rem clamp(1rem, 3vw, 3rem) 1.2rem;
+}
+
+.composer textarea {
+  width: 100%;
+  resize: none;
+  border: 1px solid #c9d8ec;
+  border-radius: 12px;
+  padding: 0.8rem;
+  font: inherit;
+  background: #fff;
+}
+
+.actions {
+  margin-top: 0.6rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+  background: #e2e8f0;
+}
+
+button[type="submit"] {
+  background: var(--accent);
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+}
