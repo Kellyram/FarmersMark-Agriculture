@@ -4,7 +4,8 @@ import cors from "cors";
 import express from "express";
 
 type Turn = { role: "user" | "assistant"; content: string };
-type RetrievedContext = { text: string; sourceUri: string };
+type RetrievedContext = { text: string; sourceUri: string; sectionCitation?: string };
+type Citation = { sectionCitation: string; sourceUri: string };
 
 const PORT = Number(process.env.PORT ?? 8787);
 const GOOGLE_CLOUD_PROJECT =
@@ -106,10 +107,45 @@ function fallbackAnswer(question: string, contexts: RetrievedContext[]): string 
   ].join("\n\n");
 }
 
+function getBasicSafeReply(message: string): string | null {
+  const input = message.trim().toLowerCase();
+
+  if (!input) return null;
+
+  if (/^(hi|hey|hello|yo|good morning|good afternoon|good evening)\b/.test(input)) {
+    return "Hello. I can help explain information from your configured Vertex RAG corpus using retrieved sources only.";
+  }
+
+  if (/^(how are you|how are you doing|how's it going)\b/.test(input)) {
+    return "I am ready to help. I answer using retrieved corpus context and avoid adding unsupported facts.";
+  }
+
+  if (
+    /\b(what are you|who are you|what can you do|what information do you have|help)\b/.test(input)
+  ) {
+    return [
+      "I am your FarmersMark RAG assistant.",
+      "I can explain content that exists in your configured Vertex corpus and cite the source.",
+      "If information is not in retrieved context, I will say what is missing."
+    ].join(" ");
+  }
+
+  if (/^(thanks|thank you)\b/.test(input)) {
+    return "You’re welcome.";
+  }
+
+  if (/^(bye|goodbye|see you)\b/.test(input)) {
+    return "Goodbye.";
+  }
+
+  return null;
+}
+
 async function generateWithVertex(
   message: string,
   history: Turn[],
-  promptContext: string
+  promptContext: string,
+  citationMap: string
 ): Promise<string> {
   requireVertexConfig();
   const accessToken = await getAccessToken();
@@ -134,9 +170,26 @@ async function generateWithVertex(
       systemInstruction: {
         parts: [
           {
-            text:
-              "You are a RAG assistant. Answer using the provided context. If context is insufficient, say what is missing." +
-              `\n\nContext from the Vertex RAG corpus:\n${promptContext}`
+            text: [
+              "You are a legal-information RAG assistant.",
+              "Follow these rules strictly:",
+              "1) Transform: translate dense legal jargon into simple, plain English.",
+              "2) Ground: base your answer strictly on the provided context. Do not add facts not present in context.",
+              "3) Cite: after each factual claim, include the relevant section citation token (for example: [S1], [S2]).",
+              "4) If context is insufficient, explicitly say what is missing and ask for the specific missing document/section.",
+              "5) Add this disclaimer at the end: This is only an explanation and not legal help.",
+              "6) Use only citations from the citation map below. Do not invent citation tokens.",
+              "",
+              "Output format:",
+              "- Plain-language answer",
+              "- Short bullet summary",
+              "- Disclaimer line exactly as specified above",
+              "- References section in the form: [S#] source-uri",
+              "",
+              `Citation map:\n${citationMap}`,
+              "",
+              `Context from the Vertex RAG corpus:\n${promptContext}`
+            ].join("\n")
           }
         ]
       },
@@ -189,17 +242,37 @@ app.post("/api/chat", async (req, res) => {
       return;
     }
 
+    const basicReply = getBasicSafeReply(message);
+    if (basicReply) {
+      res.json({ answer: basicReply, sources: [] });
+      return;
+    }
+
     const history = Array.isArray(body.history) ? body.history.slice(-8) : [];
-    const contexts = await retrieveFromVertexCorpus(message, VERTEX_RAG_TOP_K);
-    const sources = Array.from(new Set(contexts.map((x) => x.sourceUri)));
+    const contextsRaw = await retrieveFromVertexCorpus(message, VERTEX_RAG_TOP_K);
+    const contexts = contextsRaw.map((ctx, idx) => ({
+      ...ctx,
+      sectionCitation: `S${idx + 1}`
+    }));
+    const citations: Citation[] = Array.from(
+      new Map(contexts.map((x) => [x.sectionCitation ?? "", x.sourceUri])).entries()
+    )
+      .filter(([sectionCitation, sourceUri]) => sectionCitation && sourceUri)
+      .map(([sectionCitation, sourceUri]) => ({ sectionCitation, sourceUri }));
+    const sources = citations.map((c) => `[${c.sectionCitation}] ${c.sourceUri}`);
 
     if (contexts.length === 0) {
       res.json({ answer: fallbackAnswer(message, contexts), sources });
       return;
     }
 
-    const promptContext = contexts.map((x, i) => `[Chunk ${i + 1}] ${x.text}`).join("\n\n");
-    const answer = await generateWithVertex(message, history, promptContext);
+    const promptContext = contexts
+      .map((x) => `[${x.sectionCitation}] ${x.sourceUri}\n${x.text}`)
+      .join("\n\n");
+    const citationMap = citations.map((c) => `[${c.sectionCitation}] ${c.sourceUri}`).join("\n");
+    const rawAnswer = await generateWithVertex(message, history, promptContext, citationMap);
+    const hasReferences = /\breferences\b\s*:/i.test(rawAnswer);
+    const answer = hasReferences ? rawAnswer : `${rawAnswer}\n\nReferences:\n${citationMap}`;
     res.json({ answer, sources });
   } catch (error) {
     const text = error instanceof Error ? error.message : "unknown error";
