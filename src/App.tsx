@@ -17,6 +17,13 @@ type ChatResponse = {
 const starter = "Ask anything about the attached Vertex AI RAG notes.";
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
+function cleanMarkdownAsterisks(content: string): string {
+  return content
+    .replace(/^\s*\*\s+/gm, "• ")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1");
+}
+
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([
     { id: crypto.randomUUID(), role: "assistant", content: starter }
@@ -103,7 +110,7 @@ export default function App() {
           {messages.map((message) => (
             <article key={message.id} className={`bubble ${message.role}`}>
               <header>{message.role === "user" ? "You" : "Assistant"}</header>
-              <p>{message.content}</p>
+              <p>{cleanMarkdownAsterisks(message.content)}</p>
               {message.sources && message.sources.length > 0 && (
                 <ul className="sources">
                   {message.sources.map((source, idx) => (
