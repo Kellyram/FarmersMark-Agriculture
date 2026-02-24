@@ -46,7 +46,7 @@ type Conversation = {
 
 type ChatResponse = {
   answer: string;
-  sources: string[];
+  sources?: string[];
 };
 
 const starter = "Welcome to FarmersMark RAG. Ask about policies, market systems, or agronomy from your corpus.";
@@ -56,17 +56,34 @@ function cleanMarkdownAsterisks(content: string): string {
   return content.replace(/^\s*\*\s+/gm, "- ").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1");
 }
 
+function normalizeSources(sources: unknown): string[] | undefined {
+  if (!Array.isArray(sources)) return undefined;
+  const cleaned = sources
+    .filter((value): value is string => typeof value === "string")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+  return cleaned.length > 0 ? cleaned : undefined;
+}
+
 function fromStoredMessages(items: StoredMessage[]): Message[] {
   if (items.length === 0) {
     return [{ id: crypto.randomUUID(), role: "assistant", content: starter }];
   }
-  return items.map((m) => ({ id: crypto.randomUUID(), role: m.role, content: m.content, sources: m.sources }));
+  return items.map((m) => {
+    const sources = normalizeSources(m.sources);
+    return sources
+      ? { id: crypto.randomUUID(), role: m.role, content: m.content, sources }
+      : { id: crypto.randomUUID(), role: m.role, content: m.content };
+  });
 }
 
 function toStoredMessages(items: Message[]): StoredMessage[] {
   return items
     .filter((m) => !(m.role === "assistant" && m.content === starter))
-    .map((m) => ({ role: m.role, content: m.content, sources: m.sources }));
+    .map((m) => {
+      const sources = normalizeSources(m.sources);
+      return sources ? { role: m.role, content: m.content, sources } : { role: m.role, content: m.content };
+    });
 }
 
 function makeTitle(messages: StoredMessage[]): string {
@@ -237,14 +254,22 @@ export default function App() {
       }
 
       const data = (await response.json()) as ChatResponse;
+      const answerText = typeof data.answer === "string" ? data.answer : "I do not have an answer.";
+      const sources = normalizeSources(data.sources);
       const withAnswer = [
         ...nextMessages,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant" as const,
-          content: data.answer,
-          sources: data.sources
-        }
+        sources
+          ? {
+              id: crypto.randomUUID(),
+              role: "assistant" as const,
+              content: answerText,
+              sources
+            }
+          : {
+              id: crypto.randomUUID(),
+              role: "assistant" as const,
+              content: answerText
+            }
       ];
       setMessages(withAnswer);
       await persistMessagesSafe(withAnswer);
