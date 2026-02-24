@@ -2,4 +2,7 @@ node_modules/
 dist/
 dist-server/
 *.tsbuildinfo
+
+
 .env
+.env.example
