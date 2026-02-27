@@ -755,3 +755,51 @@ textarea {
   background-image: url("/images/agri/strip-4.jpg");
 }
 
+/* ── Mobile overrides for sections defined after the first breakpoint block ── */
+@media (max-width: 760px) {
+  .hero.hero-photo {
+    grid-template-columns: 1fr;
+    min-height: 420px;
+  }
+
+  .hero-panel {
+    width: 100%;
+  }
+
+  .role-split {
+    grid-template-columns: 1fr;
+  }
+
+  .role-button {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .about-section {
+    grid-template-columns: 1fr;
+  }
+
+  .about-photo {
+    min-height: 220px;
+  }
+
+  .culture-section {
+    grid-template-columns: 1fr;
+  }
+
+  .culture-photo {
+    min-height: 220px;
+  }
+
+  .news-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallery-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .strip-photo {
+    min-height: 160px;
+  }
+}

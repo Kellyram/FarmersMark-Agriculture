@@ -266,6 +266,8 @@
 }
 
 .bubble-markdown table {
+  display: block;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   margin: 0.6rem 0;
@@ -477,7 +479,9 @@
 }
 
 @media (max-width: 1024px) {
-  .chat-body {
+  .chat-body,
+  .chat-shell.sidebar-closed .chat-body,
+  .chat-shell.sidebar-open .chat-body {
     grid-template-columns: 1fr;
   }
 
@@ -541,6 +545,36 @@
 
   .chat-bubble.user {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-header {
+    padding: 0.5rem 0.65rem;
+    gap: 0.35rem;
+  }
+
+  .chat-header-actions {
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  .chat-bubble {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.93rem;
+  }
+
+  .chat-composer {
+    padding: 0.6rem 0.65rem 0.75rem;
+  }
+
+  .chat-composer textarea {
+    min-height: 64px;
+    font-size: 0.95rem;
+  }
+
+  .message-list {
+    padding: 0.75rem 0.6rem 1rem;
   }
 }
 
