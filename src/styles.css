@@ -35,6 +35,15 @@ textarea {
   min-height: 100vh;
 }
 
+.app:not(.chat-mode) {
+  background-image:
+    linear-gradient(rgba(12, 20, 16, 0.42), rgba(12, 20, 16, 0.42)),
+    url("/images/agri/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 .topbar {
   position: sticky;
   top: 0;
@@ -268,6 +277,12 @@ textarea {
 .login-intro p {
   margin: 0;
   line-height: 1.6;
+}
+
+.login-intro.login-photo {
+  background-image: url("public/images/agri/login.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
 .login-form {
@@ -507,5 +522,486 @@ textarea {
   .login-wrap,
   .assistant {
     width: calc(100% - 1rem);
+  }
+}
+
+/* Landing with photos restore */
+.hero.hero-photo {
+  margin-top: 0.2rem;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  align-items: end;
+  gap: 1.2rem;
+  min-height: 640px;
+  padding: clamp(1.2rem, 2.4vw, 2.2rem);
+  overflow: hidden;
+  background-image: url("/images/agri/pexels-nicolasveithen-1719669.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+.hero-copy,
+.hero-panel {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-copy h1 {
+  margin-top: 0.6rem;
+  font-size: clamp(2rem, 5vw, 4.1rem);
+  line-height: 1.03;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+}
+
+.hero-copy p {
+  max-width: 780px;
+  font-size: 1.03rem;
+  line-height: 1.55;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.dual-cta {
+  margin-top: 1.5rem;
+}
+
+.role-split {
+  margin-top: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border-radius: 0 0 24px 24px;
+  overflow: hidden;
+}
+
+.role-card {
+  padding: 2.2rem 1.6rem 2.4rem;
+  color: #fff;
+}
+
+.role-card p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  opacity: 0.88;
+}
+
+.role-card h3 {
+  margin: 0.65rem 0 1.1rem;
+  font-size: clamp(1.3rem, 3vw, 1.95rem);
+}
+
+.farmer-cta {
+  background-image: url("/images/agri/hero-farmer.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.dealer-cta {
+  background: linear-gradient(145deg, #10363a, #194f53);
+}
+
+.role-button {
+  min-width: 180px;
+  background: #efcc56;
+  color: #262616;
+  border: none;
+  font-weight: 800;
+}
+
+.about-section {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 1.2rem;
+  padding: clamp(1rem, 2.2vw, 2.1rem);
+}
+
+.about-copy h2 {
+  margin: 0.45rem 0 0.8rem;
+  font-size: clamp(1.55rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+
+.about-copy p {
+  line-height: 1.7;
+  color: #244549;
+}
+
+.about-photo {
+  border-radius: 24px;
+  min-height: 420px;
+  background-image: url("/images/agri/what-we-do.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+.quote-band {
+  margin-top: 1.55rem;
+  min-height: 240px;
+  border-radius: 26px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  padding: 1.3rem;
+  color: #182e1e;
+  background-image:
+    linear-gradient(180deg, rgba(230, 239, 220, 0.72), rgba(216, 229, 204, 0.76)),
+    url("/images/agri/quote-band-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(62, 85, 54, 0.2);
+}
+
+.quote-band p {
+  margin: 0;
+  max-width: 930px;
+  font-size: clamp(1.2rem, 2.3vw, 2rem);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.quote-band span {
+  font-weight: 700;
+  color: #2a4731;
+}
+
+.culture-section {
+  margin-top: 1.55rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  padding: clamp(1rem, 2.2vw, 2.1rem);
+}
+
+.culture-photo {
+  border-radius: 24px;
+  min-height: 430px;
+  background-image: url("/images/agri/culture-left.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.culture-copy h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 3.2rem);
+  line-height: 1.07;
+}
+
+.culture-copy p {
+  margin: 1rem 0 1.3rem;
+  line-height: 1.7;
+  color: #24484a;
+}
+
+.news-section {
+  margin-top: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.news-card {
+  padding: 1rem 1.1rem;
+}
+
+.news-card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.news-card p {
+  margin: 0.45rem 0 0;
+  color: #2f5559;
+  line-height: 1.55;
+}
+
+.gallery-strip {
+  margin-top: 1.3rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.strip-photo {
+  min-height: 220px;
+  border-radius: 18px;
+  background-size: cover;
+  background-position: center;
+}
+
+.strip-one {
+  background-image: url("/images/agri/strip-1.png");
+}
+
+.strip-two {
+  background-image: url("/images/agri/strip-2.png");
+}
+
+.strip-three {
+  background-image: url("/images/agri/strip-3.png");
+}
+
+.strip-four {
+  background-image: url("/images/agri/strip-4.jpg");
+}
+
+/* Chat board restore */
+.guest-upgrade-actions {
+  margin-top: 0.55rem;
+  display: grid;
+  gap: 0.42rem;
+}
+
+.guest-upgrade-actions .side-button {
+  margin-bottom: 0;
+}
+
+.app.chat-mode {
+  height: 100vh;
+  min-height: 100vh;
+  background: #0d1117;
+  overflow: hidden;
+}
+
+.app.chat-mode .assistant {
+  width: 100%;
+  margin: 0;
+  height: calc(100vh - 68px);
+  min-height: calc(100vh - 68px);
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
+  transition: grid-template-columns 220ms ease;
+}
+
+.app.chat-mode .assistant-side {
+  position: relative;
+  top: auto;
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
+  border: none;
+  border-right: 1px solid #1f2733;
+  border-radius: 0;
+  background: #0f141c;
+  box-shadow: none;
+  padding: 0.95rem 0.8rem 1rem;
+  overflow-y: auto;
+}
+
+.app.chat-mode .assistant-side h3 {
+  color: #e0e7f4;
+}
+
+.app.chat-mode .assistant-side p,
+.app.chat-mode .chat-history h4,
+.app.chat-mode .muted {
+  color: #9eafca;
+}
+
+.app.chat-mode .assistant-side .ghost {
+  background: #2b313d;
+  border-color: #3a4150;
+  color: #e8edf7;
+}
+
+.app.chat-mode .assistant-side .cta {
+  background: #4f78ff;
+  border-color: #4f78ff;
+  color: #f5f8ff;
+}
+
+.app.chat-mode .chat-history {
+  background: #111722;
+  border-color: #252d3a;
+}
+
+.app.chat-mode .history-item {
+  border-color: #30394a;
+  background: #181f2b;
+}
+
+.app.chat-mode .history-item.active {
+  border-color: #4f78ff;
+  background: #1f2b44;
+}
+
+.app.chat-mode .history-open {
+  color: #e4ebf7;
+}
+
+.app.chat-mode .history-delete {
+  border-color: rgba(241, 130, 130, 0.5);
+  background: rgba(123, 36, 36, 0.35);
+  color: #ffd3d3;
+}
+
+.app.chat-mode .assistant-main.card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  min-height: calc(100vh - 68px);
+  border: none;
+  border-radius: 0;
+  background: #0d1117;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.app.chat-mode .assistant-toolbar {
+  padding: 0.7rem clamp(1rem, 3vw, 2.7rem) 0.45rem;
+  border-bottom: 1px solid #1f2733;
+}
+
+.app.chat-mode .sidebar-toggle {
+  border: 1px solid #3a4252;
+  background: #1e2635;
+  color: #d9e3f3;
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+}
+
+.app.chat-mode .assistant.sidebar-collapsed {
+  grid-template-columns: 0 minmax(0, 1fr);
+}
+
+.app.chat-mode .assistant.sidebar-collapsed .assistant-side {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  border-right: none;
+  overflow: hidden;
+}
+
+.app.chat-mode .assistant.sidebar-collapsed .assistant-side * {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.app.chat-mode .messages {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.15rem clamp(1rem, 3vw, 2.7rem) 1.3rem;
+  gap: 0.95rem;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: stretch;
+}
+
+.app.chat-mode .bubble {
+  display: grid;
+  gap: 0.62rem;
+  max-width: min(104ch, 100%);
+  width: fit-content;
+  padding: 0.8rem 1rem;
+  border: 1px solid #303a4d;
+  border-radius: 18px;
+  background: #171d29;
+}
+
+.app.chat-mode .bubble header {
+  display: none;
+}
+
+.app.chat-mode .bubble.assistant {
+  width: min(104ch, 100%);
+  justify-self: start;
+  color: #e3e9f5;
+}
+
+.app.chat-mode .bubble.user {
+  justify-self: end;
+  width: min(72ch, 100%);
+  background: #2a2f39;
+  border-color: #3e4655;
+  color: #edf2fb;
+}
+
+.app.chat-mode .bubble p {
+  margin: 0;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.app.chat-mode .typing-caret {
+  margin-left: 0.18rem;
+  opacity: 0.9;
+  animation: blink-caret 0.9s step-end infinite;
+}
+
+.app.chat-mode .sources {
+  margin: 0.15rem 0 0;
+  padding-left: 1rem;
+  color: #95a6c3;
+}
+
+.app.chat-mode .sources li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.app.chat-mode .composer {
+  position: sticky;
+  bottom: 0;
+  border-top: none;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(13, 17, 23, 0), #0d1117 33%);
+  padding: 0.95rem clamp(1rem, 3vw, 2.7rem) 1.2rem;
+}
+
+.app.chat-mode .composer textarea {
+  min-height: 92px;
+  border-color: #3a4150;
+  border-radius: 16px;
+  background: #2a2f39;
+  color: #edf2fb;
+}
+
+.app.chat-mode .actions .cta {
+  background: #4f78ff;
+  border-color: #4f78ff;
+  color: #f5f8ff;
+}
+
+.app.chat-mode .actions .ghost {
+  background: transparent;
+  border-color: #4a556c;
+  color: #aebbd2;
+}
+
+@keyframes blink-caret {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .app.chat-mode .assistant {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .app.chat-mode .assistant-side {
+    position: static;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #1f2733;
+  }
+
+  .app.chat-mode .assistant-main.card {
+    min-height: calc(100vh - 120px);
   }
 }
