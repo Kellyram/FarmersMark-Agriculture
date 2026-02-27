@@ -1,0 +1,39 @@
+.app.chat-mode {
+  --chat-bg: #edf4eb;
+  --chat-bg-gradient:
+    radial-gradient(circle at 2% 0%, rgba(85, 138, 97, 0.18), transparent 38%),
+    radial-gradient(circle at 98% 0%, rgba(143, 169, 80, 0.18), transparent 42%),
+    linear-gradient(180deg, #f8fcf5 0%, #ecf2ea 100%);
+  --chat-panel: #f6faf3;
+  --chat-panel-strong: #ffffff;
+  --chat-border: #cfdacc;
+  --chat-muted: #4f6158;
+  --chat-text: #1a2921;
+  --chat-accent: #2d7d4a;
+  --chat-accent-strong: #1f6540;
+  --chat-danger: #b94f57;
+  --chat-user-bubble: #e0efdf;
+  --chat-assistant-bubble: #ffffff;
+  --chat-code: #1d2e25;
+  --chat-overlay: rgba(10, 16, 12, 0.5);
+}
+
+.app.chat-mode[data-chat-theme="dark"] {
+  --chat-bg: #081218;
+  --chat-bg-gradient:
+    radial-gradient(circle at 2% 0%, rgba(68, 128, 129, 0.36), transparent 42%),
+    radial-gradient(circle at 98% 0%, rgba(123, 150, 79, 0.28), transparent 44%),
+    linear-gradient(180deg, #081218 0%, #0d1a1f 100%);
+  --chat-panel: #0f2226;
+  --chat-panel-strong: #132a2f;
+  --chat-border: #274249;
+  --chat-muted: #9bb6ad;
+  --chat-text: #e8f4ec;
+  --chat-accent: #60c18f;
+  --chat-accent-strong: #45a878;
+  --chat-danger: #ec828b;
+  --chat-user-bubble: #1d3235;
+  --chat-assistant-bubble: #132b31;
+  --chat-code: #cfe8d8;
+  --chat-overlay: rgba(5, 9, 12, 0.72);
+}

@@ -6,6 +6,20 @@ import express from "express";
 type Turn = { role: "user" | "assistant"; content: string };
 type RetrievedContext = { text: string; sourceUri: string; sectionCitation?: string };
 type Citation = { sectionCitation: string; sourceUri: string };
+type VertexErrorPayload = { error?: { code?: number; message?: string; status?: string } };
+
+class HttpError extends Error {
+  status: number;
+  code: string;
+  retryable: boolean;
+
+  constructor(message: string, status: number, code: string, retryable = false) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.retryable = retryable;
+  }
+}
 
 const PORT = Number(process.env.PORT ?? 8787);
 const GOOGLE_CLOUD_PROJECT =
@@ -46,6 +60,54 @@ function requireVertexConfig(): void {
   }
 }
 
+function parseVertexErrorDetails(raw: string): {
+  code?: number;
+  message?: string;
+  status?: string;
+} {
+  try {
+    const parsed = JSON.parse(raw) as VertexErrorPayload;
+    return {
+      code: parsed.error?.code,
+      message: parsed.error?.message,
+      status: parsed.error?.status
+    };
+  } catch {
+    return {};
+  }
+}
+
+function toVertexHttpError(operation: string, status: number, rawDetails: string): HttpError {
+  const parsed = parseVertexErrorDetails(rawDetails);
+  const providerStatus = parsed.status?.toUpperCase();
+  const providerMessage = parsed.message?.trim();
+  const isQuota = status === 429 || providerStatus === "RESOURCE_EXHAUSTED";
+
+  console.error(`[vertex:${operation}]`, {
+    status,
+    providerStatus: providerStatus ?? null,
+    providerMessage: providerMessage ?? null,
+    rawDetails
+  });
+
+  if (isQuota) {
+    return new HttpError(
+      "The assistant is temporarily at capacity. Please retry shortly.",
+      429,
+      "RESOURCE_EXHAUSTED",
+      true
+    );
+  }
+
+  const safeStatus = status >= 400 && status < 600 ? status : 500;
+  return new HttpError(
+    "I could not process that request right now. Please try again.",
+    safeStatus,
+    providerStatus || "VERTEX_ERROR",
+    false
+  );
+}
+
 async function retrieveFromVertexCorpus(query: string, topK: number): Promise<RetrievedContext[]> {
   requireVertexConfig();
   const accessToken = await getAccessToken();
@@ -73,7 +135,7 @@ async function retrieveFromVertexCorpus(query: string, topK: number): Promise<Re
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`Vertex retrieveContexts failed: ${response.status} ${details}`);
+    throw toVertexHttpError("retrieveContexts", response.status, details);
   }
 
   const payload = (await response.json()) as {
@@ -141,6 +203,21 @@ function getBasicSafeReply(message: string): string | null {
   return null;
 }
 
+function sanitizeAnswer(rawAnswer: string): string {
+  const withoutDisclaimer = rawAnswer.replace(
+    /\bThis is only an explanation and not legal help\.?/gi,
+    ""
+  );
+  const withoutReferences = withoutDisclaimer.replace(/\n*\s*References\s*:[\s\S]*$/i, "");
+  const cleaned = withoutReferences
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return cleaned || rawAnswer.trim();
+}
+
 async function generateWithVertex(
   message: string,
   history: Turn[],
@@ -177,14 +254,11 @@ async function generateWithVertex(
               "2) Ground: base your answer strictly on the provided context. Do not add facts not present in context.",
               "3) Cite: after each factual claim, include the relevant section citation token (for example: [S1], [S2]).",
               "4) If context is insufficient, explicitly say what is missing and ask for the specific missing document/section.",
-              "5) Add this disclaimer at the end: This is only an explanation and not legal help.",
-              "6) Use only citations from the citation map below. Do not invent citation tokens.",
+              "5) Use only citations from the citation map below. Do not invent citation tokens.",
               "",
               "Output format:",
               "- Plain-language answer",
               "- Short bullet summary",
-              "- Disclaimer line exactly as specified above",
-              "- References section in the form: [S#] source-uri",
               "",
               `Citation map:\n${citationMap}`,
               "",
@@ -202,7 +276,7 @@ async function generateWithVertex(
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`Vertex generateContent failed: ${response.status} ${details}`);
+    throw toVertexHttpError("generateContent", response.status, details);
   }
 
   const payload = (await response.json()) as {
@@ -271,12 +345,26 @@ app.post("/api/chat", async (req, res) => {
       .join("\n\n");
     const citationMap = citations.map((c) => `[${c.sectionCitation}] ${c.sourceUri}`).join("\n");
     const rawAnswer = await generateWithVertex(message, history, promptContext, citationMap);
-    const hasReferences = /\breferences\b\s*:/i.test(rawAnswer);
-    const answer = hasReferences ? rawAnswer : `${rawAnswer}\n\nReferences:\n${citationMap}`;
+    const answer = sanitizeAnswer(rawAnswer);
     res.json({ answer, sources });
   } catch (error) {
-    const text = error instanceof Error ? error.message : "unknown error";
-    res.status(500).json({ error: text });
+    if (error instanceof HttpError) {
+      res.status(error.status).json({
+        error: error.message,
+        status: error.status,
+        code: error.code,
+        retryable: error.retryable
+      });
+      return;
+    }
+
+    console.error("[api/chat] unexpected error", error);
+    res.status(500).json({
+      error: "I could not process that request right now. Please try again.",
+      status: 500,
+      code: "INTERNAL_ERROR",
+      retryable: false
+    });
   }
 });
 

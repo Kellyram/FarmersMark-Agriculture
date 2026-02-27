@@ -20,40 +20,31 @@ import {
   updateDoc
 } from "firebase/firestore";
 import { auth, db, googleProvider } from "./firebase";
+import ChatWorkspace from "./chat/components/ChatWorkspace";
+import { CHAT_SIDEBAR_STORAGE_KEY, STARTER_MESSAGE } from "./chat/constants";
+import { useChatTheme } from "./chat/hooks/useChatTheme";
+import {
+  ChatApiError,
+  ChatMode,
+  ChatResponse,
+  Conversation,
+  Message,
+  StoredMessage
+} from "./chat/types";
 
-type Role = "user" | "assistant";
 type View = "landing" | "login" | "signup" | "chat";
-
-type Message = {
-  id: string;
-  role: Role;
-  content: string;
-  sources?: string[];
-};
-
-type StoredMessage = {
-  role: Role;
-  content: string;
-  sources?: string[];
-};
-
-type Conversation = {
-  id: string;
-  title: string;
-  updatedAt: number;
-  messages: StoredMessage[];
-};
-
-type ChatResponse = {
-  answer: string;
-  sources?: string[];
-};
-
-const starter = "Welcome to FarmersMark RAG. Ask about policies, market systems, or agronomy from your corpus.";
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
 
-function cleanMarkdownAsterisks(content: string): string {
-  return content.replace(/^\s*\*\s+/gm, "- ").replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1");
+function readSidebarPreference(): boolean {
+  if (typeof window === "undefined") return true;
+  const stored = window.localStorage.getItem(CHAT_SIDEBAR_STORAGE_KEY);
+  if (stored === null) return true;
+  return stored === "true";
+}
+
+function isChatApiError(value: unknown): value is ChatApiError {
+  if (!value || typeof value !== "object") return false;
+  return "error" in value && typeof (value as { error?: unknown }).error === "string";
 }
 
 function normalizeSources(sources: unknown): string[] | undefined {
@@ -65,24 +56,41 @@ function normalizeSources(sources: unknown): string[] | undefined {
   return cleaned.length > 0 ? cleaned : undefined;
 }
 
+function sanitizeAssistantContent(content: string): string {
+  const withoutDisclaimer = content.replace(
+    /\bThis is only an explanation and not legal help\.?/gi,
+    ""
+  );
+  const withoutReferences = withoutDisclaimer.replace(/\n*\s*References\s*:[\s\S]*$/i, "");
+  const cleaned = withoutReferences
+    .split(/\r?\n/)
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  return cleaned || content.trim();
+}
+
 function fromStoredMessages(items: StoredMessage[]): Message[] {
   if (items.length === 0) {
-    return [{ id: crypto.randomUUID(), role: "assistant", content: starter }];
+    return [{ id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }];
   }
   return items.map((m) => {
+    const content = m.role === "assistant" ? sanitizeAssistantContent(m.content) : m.content;
     const sources = normalizeSources(m.sources);
     return sources
-      ? { id: crypto.randomUUID(), role: m.role, content: m.content, sources }
-      : { id: crypto.randomUUID(), role: m.role, content: m.content };
+      ? { id: crypto.randomUUID(), role: m.role, content, sources }
+      : { id: crypto.randomUUID(), role: m.role, content };
   });
 }
 
 function toStoredMessages(items: Message[]): StoredMessage[] {
   return items
-    .filter((m) => !(m.role === "assistant" && m.content === starter))
+    .filter((m) => !(m.role === "assistant" && m.content === STARTER_MESSAGE))
     .map((m) => {
+      const content = m.role === "assistant" ? sanitizeAssistantContent(m.content) : m.content;
       const sources = normalizeSources(m.sources);
-      return sources ? { role: m.role, content: m.content, sources } : { role: m.role, content: m.content };
+      return sources ? { role: m.role, content, sources } : { role: m.role, content };
     });
 }
 
@@ -98,7 +106,10 @@ export default function App() {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([{ id: crypto.randomUUID(), role: "assistant", content: starter }]);
+  const [chatMode, setChatMode] = useState<ChatMode>("existing");
+  const [messages, setMessages] = useState<Message[]>([
+    { id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -110,14 +121,23 @@ export default function App() {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirm, setSignupConfirm] = useState("");
   const [signupError, setSignupError] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(readSidebarPreference);
   const [typingMessageKey, setTypingMessageKey] = useState<string | null>(null);
   const [typingText, setTypingText] = useState("");
+  const [lastRetryablePrompt, setLastRetryablePrompt] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const typingTimerRef = useRef<number | null>(null);
+  const activeChatIdRef = useRef<string | null>(null);
+  const chatModeRef = useRef<ChatMode>("existing");
+  const { theme, toggleTheme } = useChatTheme();
   const isGuest = !authUser;
 
-  const transcript = useMemo(() => messages.filter((m) => m.role !== "assistant" || m.content !== starter), [messages]);
+  const transcript = useMemo(
+    () => messages.filter((m) => m.role !== "assistant" || m.content !== STARTER_MESSAGE),
+    [messages]
+  );
+  const hasGuestResponses =
+    isGuest && messages.some((m) => m.role === "assistant" && m.content !== STARTER_MESSAGE);
   const isChatView = view === "chat";
 
   useEffect(() => {
@@ -127,14 +147,25 @@ export default function App() {
         setDisplayName("Farmer");
         setConversations([]);
         setActiveChatId(null);
+        setChatMode("existing");
+        setLastRetryablePrompt(null);
         return;
       }
       const name = user.displayName?.trim() || user.email?.split("@")[0] || "Farmer";
       setDisplayName(name);
+      setChatMode("existing");
       setView("chat");
     });
     return () => unsubAuth();
   }, []);
+
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
+
+  useEffect(() => {
+    chatModeRef.current = chatMode;
+  }, [chatMode]);
 
   useEffect(() => {
     return () => {
@@ -143,6 +174,10 @@ export default function App() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(CHAT_SIDEBAR_STORAGE_KEY, String(sidebarOpen));
+  }, [sidebarOpen]);
 
   useEffect(() => {
     if (!authUser) return;
@@ -163,21 +198,35 @@ export default function App() {
         };
       });
       setConversations(next);
-      if (!activeChatId && next.length > 0) {
-        setActiveChatId(next[0].id);
-        setMessages(fromStoredMessages(next[0].messages));
-      } else if (activeChatId) {
-        const active = next.find((c) => c.id === activeChatId);
-        if (active) {
-          setMessages(fromStoredMessages(active.messages));
+
+      if (chatModeRef.current === "draft") return;
+
+      const selectedId = activeChatIdRef.current;
+      if (!selectedId) {
+        if (next.length > 0) {
+          setActiveChatId(next[0].id);
+          setMessages(fromStoredMessages(next[0].messages));
         } else {
-          setActiveChatId(next[0]?.id ?? null);
-          setMessages(next[0] ? fromStoredMessages(next[0].messages) : [{ id: crypto.randomUUID(), role: "assistant", content: starter }]);
+          setMessages([{ id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }]);
         }
+        return;
       }
+
+      const active = next.find((c) => c.id === selectedId);
+      if (active) {
+        setMessages(fromStoredMessages(active.messages));
+        return;
+      }
+
+      setActiveChatId(next[0]?.id ?? null);
+      setMessages(
+        next[0]
+          ? fromStoredMessages(next[0].messages)
+          : [{ id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }]
+      );
     });
     return () => unsub();
-  }, [authUser, activeChatId]);
+  }, [authUser]);
 
   async function ensureUserProfile(user: User) {
     await setDoc(
@@ -192,18 +241,22 @@ export default function App() {
     );
   }
 
-  async function persistMessages(nextMessages: Message[]) {
-    if (!authUser) return;
+  async function persistMessages(
+    nextMessages: Message[],
+    chatIdOverride?: string | null
+  ): Promise<string | null> {
+    const resolvedChatId = chatIdOverride ?? activeChatIdRef.current;
+    if (!authUser) return resolvedChatId;
     const stored = toStoredMessages(nextMessages);
     const now = Date.now();
     const title = makeTitle(stored);
-    if (activeChatId) {
-      await updateDoc(doc(db, "users", authUser.uid, "chats", activeChatId), {
+    if (resolvedChatId) {
+      await updateDoc(doc(db, "users", authUser.uid, "chats", resolvedChatId), {
         title,
         messages: stored,
         updatedAt: now
       });
-      return;
+      return resolvedChatId;
     }
     const created = await addDoc(collection(db, "users", authUser.uid, "chats"), {
       title,
@@ -212,21 +265,27 @@ export default function App() {
       updatedAt: now
     });
     setActiveChatId(created.id);
+    setChatMode("existing");
+    return created.id;
   }
 
-  async function persistMessagesSafe(nextMessages: Message[]) {
+  async function persistMessagesSafe(
+    nextMessages: Message[],
+    chatIdOverride?: string | null
+  ): Promise<string | null> {
     try {
-      await persistMessages(nextMessages);
+      return await persistMessages(nextMessages, chatIdOverride);
     } catch (error) {
       console.error("Failed to persist chat history", error);
+      return chatIdOverride ?? activeChatIdRef.current;
     }
   }
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = input.trim();
+  async function submitPrompt(promptOverride?: string) {
+    const trimmed = (promptOverride ?? input).trim();
     if (!trimmed || loading) return;
     stopTypingAnimation();
+    setLastRetryablePrompt(null);
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -238,7 +297,11 @@ export default function App() {
     setMessages(nextMessages);
     setInput("");
     setLoading(true);
-    await persistMessagesSafe(nextMessages);
+    let workingChatId = await persistMessagesSafe(nextMessages, activeChatIdRef.current);
+    if (workingChatId) {
+      setActiveChatId(workingChatId);
+      setChatMode("existing");
+    }
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -255,20 +318,29 @@ export default function App() {
       });
 
       if (!response.ok) {
-        let details = `Request failed: ${response.status}`;
+        let details: ChatApiError = {
+          error: `Request failed: ${response.status}`,
+          status: response.status
+        };
         try {
-          const payload = (await response.json()) as { error?: string };
-          if (payload?.error) {
-            details = payload.error;
-          }
+          const payload = (await response.json()) as Partial<ChatApiError>;
+          details = {
+            error: typeof payload.error === "string" ? payload.error : details.error,
+            status: typeof payload.status === "number" ? payload.status : response.status,
+            code: typeof payload.code === "string" ? payload.code : undefined,
+            retryable: typeof payload.retryable === "boolean" ? payload.retryable : false
+          };
         } catch {
           // Ignore parse failures and keep status fallback.
         }
-        throw new Error(details);
+        throw details;
       }
 
       const data = (await response.json()) as ChatResponse;
-      const answerText = typeof data.answer === "string" ? data.answer : "I do not have an answer.";
+      const answerText =
+        typeof data.answer === "string"
+          ? sanitizeAssistantContent(data.answer)
+          : "I do not have an answer.";
       const sources = normalizeSources(data.sources);
       const assistantMessage: Message = sources
         ? {
@@ -287,26 +359,58 @@ export default function App() {
         assistantMessage
       ];
       setMessages(withAnswer);
-      startTypingAnimation(`${withAnswer.length - 1}:assistant:${assistantMessage.content}`, assistantMessage.content);
-      await persistMessagesSafe(withAnswer);
+      startTypingAnimation(assistantMessage.id, assistantMessage.content);
+      workingChatId = await persistMessagesSafe(withAnswer, workingChatId);
+      if (workingChatId) {
+        setActiveChatId(workingChatId);
+        setChatMode("existing");
+      }
+      setLastRetryablePrompt(null);
     } catch (error) {
-      const text = error instanceof Error ? error.message : "Unknown error";
+      if (error instanceof Error && error.name === "AbortError") {
+        return;
+      }
+
+      const apiError = isChatApiError(error) ? error : null;
+      const retryable =
+        !!apiError?.retryable ||
+        apiError?.status === 429 ||
+        apiError?.code === "RESOURCE_EXHAUSTED";
+      const content = retryable
+        ? "The assistant is temporarily at capacity. Please retry shortly."
+        : "I could not process that request right now. Please try again.";
+
+      setLastRetryablePrompt(retryable ? trimmed : null);
       const assistantErrorMessage: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: `I could not process that request. ${text}`
+        content
       };
       const withError = [
         ...nextMessages,
         assistantErrorMessage
       ];
       setMessages(withError);
-      startTypingAnimation(`${withError.length - 1}:assistant:${assistantErrorMessage.content}`, assistantErrorMessage.content);
-      await persistMessagesSafe(withError);
+      startTypingAnimation(assistantErrorMessage.id, assistantErrorMessage.content);
+      workingChatId = await persistMessagesSafe(withError, workingChatId);
+      if (workingChatId) {
+        setActiveChatId(workingChatId);
+        setChatMode("existing");
+      }
     } finally {
       setLoading(false);
       abortRef.current = null;
     }
+  }
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    await submitPrompt();
+  }
+
+  async function onRetry() {
+    if (!lastRetryablePrompt) return;
+    await submitPrompt(lastRetryablePrompt);
   }
 
   function onStop() {
@@ -379,25 +483,40 @@ export default function App() {
   async function onDeleteChat(chatId: string) {
     if (!authUser) return;
     await deleteDoc(doc(db, "users", authUser.uid, "chats", chatId));
-    if (chatId === activeChatId) {
+    if (chatId === activeChatIdRef.current) {
       stopTypingAnimation();
       setActiveChatId(null);
-      setMessages([{ id: crypto.randomUUID(), role: "assistant", content: starter }]);
+      setChatMode("existing");
     }
   }
 
-  function onNewChat() {
+  function onSelectChat(chatId: string) {
     stopTypingAnimation();
+    setLastRetryablePrompt(null);
+    setChatMode("existing");
+    setActiveChatId(chatId);
+  }
+
+  function onNewChat() {
+    abortRef.current?.abort();
+    stopTypingAnimation();
+    setLoading(false);
+    setInput("");
+    setLastRetryablePrompt(null);
+    setChatMode("draft");
     setActiveChatId(null);
-    setMessages([{ id: crypto.randomUUID(), role: "assistant", content: starter }]);
+    setMessages([{ id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }]);
   }
 
   async function onLogout() {
+    abortRef.current?.abort();
     stopTypingAnimation();
     await signOut(auth);
     setConversations([]);
     setActiveChatId(null);
-    setMessages([{ id: crypto.randomUUID(), role: "assistant", content: starter }]);
+    setChatMode("existing");
+    setLastRetryablePrompt(null);
+    setMessages([{ id: crypto.randomUUID(), role: "assistant", content: STARTER_MESSAGE }]);
     setView("landing");
   }
 
@@ -411,8 +530,7 @@ export default function App() {
   }
 
   function startTypingAnimation(messageKey: string, fullContent: string) {
-    const cleaned = cleanMarkdownAsterisks(fullContent);
-    const total = cleaned.length;
+    const total = fullContent.length;
     if (total === 0) {
       stopTypingAnimation();
       return;
@@ -425,13 +543,12 @@ export default function App() {
     setTypingMessageKey(messageKey);
     setTypingText("");
 
-    const intervalMs = 28;
     const step = Math.max(1, Math.ceil(total / 80));
     let cursor = 0;
 
     typingTimerRef.current = window.setInterval(() => {
       cursor = Math.min(total, cursor + step);
-      setTypingText(cleaned.slice(0, cursor));
+      setTypingText(fullContent.slice(0, cursor));
       if (cursor >= total) {
         if (typingTimerRef.current !== null) {
           window.clearInterval(typingTimerRef.current);
@@ -439,41 +556,37 @@ export default function App() {
         }
         setTypingMessageKey(null);
       }
-    }, intervalMs);
+    }, 18);
   }
 
   return (
-    <div className={`app ${isChatView ? "chat-mode" : ""}`}>
-      <header className="topbar">
-        <div className="logo" onClick={() => setView("landing")} role="button" tabIndex={0}>
-          <span className="logo-dot" />
-          <div>
-            <strong>FarmersMark</strong>
-            <small>RAG Intelligence Hub</small>
+    <div className={`app ${isChatView ? "chat-mode" : ""}`} data-chat-theme={theme}>
+      {!isChatView ? (
+        <header className="topbar">
+          <div className="logo" onClick={() => setView("landing")} role="button" tabIndex={0}>
+            <span className="logo-dot" />
+            <div>
+              <strong>FarmersMark Agriculture</strong>
+              <small>Grounded RAG Intelligence</small>
+            </div>
           </div>
-        </div>
-        <nav className="menu">
-          <button type="button" className="link" onClick={() => setView("landing")}>
-            Home
-          </button>
-          <button type="button" className="link" onClick={() => setView("login")}>
-            Login
-          </button>
-          <button type="button" className="link" onClick={() => setView("signup")}>
-            Sign Up
-          </button>
-          <button type="button" className="cta" onClick={() => setView("chat")}>
-            Open Assistant
-          </button>
-        </nav>
-      </header>
+          <nav className="menu">
+            <button type="button" className="ghost" onClick={() => setView("login")}>
+              Login
+            </button>
+            <button type="button" className="cta" onClick={() => setView("signup")}>
+              Create Account
+            </button>
+          </nav>
+        </header>
+      ) : null}
 
       {view === "landing" ? (
         <main className="landing">
           <section className="hero hero-photo card">
             <div className="hero-copy">
               <p className="eyebrow">FarmersMark Agriculture</p>
-              <h1>The Ultimate AI Assistant for Every Acre and Agribusiness</h1>
+              <h1>The Ultimate AI Assistant for Every Farmer and Agribusiness</h1>
               <p>
                 Stop digging through scattered reports. Ask our agriculture RAG engine about pest outbreaks, fertilizer
                 inputs, market trends, and policy updates to get grounded answers in seconds.
@@ -493,7 +606,7 @@ export default function App() {
             <div className="hero-panel">
               <h3>A better harvest with grounded AI</h3>
               <ol>
-                <li>Retrieve only from your configured agriculture corpus.</li>
+                <li>Retrieve only from your configured agriculture trusted source.</li>
                 <li>Generate plain-language answers from retrieved evidence.</li>
                 <li>Keep source references visible for field-level trust.</li>
               </ol>
@@ -512,7 +625,7 @@ export default function App() {
               <p>For agrodealers</p>
               <h3>Support clients using source-backed guidance and policy context.</h3>
               <button type="button" className="ghost role-button" onClick={() => setView("signup")}>
-                Am an agro-agent
+                Am a agrodealer
               </button>
             </article>
           </section>
@@ -585,10 +698,10 @@ export default function App() {
       {view === "login" ? (
         <main className="login-wrap">
           <section className="card login-card">
-            <div className="login-intro login-photo">
+            <div className="login-intro">
               <p className="eyebrow">Secure Access</p>
-              <h2>Sign In To FarmersMark RAG</h2>
-              <p>Use Google or email authentication to access grounded agricultural intelligence.</p>
+              <h2>Sign In To FarmersMark Agriculture</h2>
+              <p>Continue with Google or email to unlock full answers, follow-ups, and saved chat history.</p>
             </div>
             <form className="login-form" onSubmit={onEmailSignIn}>
               <button type="button" className="cta" onClick={onGoogleAuth} disabled={authLoading}>
@@ -626,10 +739,10 @@ export default function App() {
       {view === "signup" ? (
         <main className="login-wrap">
           <section className="card login-card">
-            <div className="login-intro login-photo">
+            <div className="login-intro">
               <p className="eyebrow">New Account</p>
-              <h2>Create FarmersMark Profile</h2>
-              <p>Your profile and chat history are stored under your account.</p>
+              <h2>Create FarmersMark Agriculture Profile</h2>
+              <p>Use one account to continue agronomy, market, and policy conversations from any device.</p>
             </div>
             <form className="login-form" onSubmit={onEmailSignUp}>
               <label>
@@ -676,117 +789,34 @@ export default function App() {
       ) : null}
 
       {view === "chat" ? (
-        <main className={`assistant ${sidebarOpen ? "" : "sidebar-collapsed"}`}>
-          <aside className="assistant-side">
-            <h3>Session</h3>
-            <p>
-              {isGuest ? (
-                <>
-                  Guest mode <strong>(not saved)</strong>
-                </>
-              ) : (
-                <>
-                  Logged in as <strong>{displayName}</strong>
-                </>
-              )}
-            </p>
-            <button type="button" className="ghost side-button" onClick={onNewChat}>
-              + New Chat
-            </button>
-            {isGuest ? (
-              <div className="chat-history">
-                <h4>History</h4>
-                <p className="muted">Guest chats are not saved.</p>
-                <p className="muted">Create a free account to read the full answer, ask follow-ups, and save your chat history.</p>
-                <div className="guest-upgrade-actions">
-                  <button type="button" className="cta side-button" onClick={() => setView("signup")}>
-                    Create Account
-                  </button>
-                  <button type="button" className="ghost side-button" onClick={() => setView("login")}>
-                    Sign In
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="chat-history">
-                  <h4>History</h4>
-                  {conversations.length === 0 ? <p className="muted">No saved chats yet.</p> : null}
-                  {conversations.map((chat) => (
-                    <div key={chat.id} className={`history-item ${chat.id === activeChatId ? "active" : ""}`}>
-                      <button type="button" className="history-open" onClick={() => setActiveChatId(chat.id)}>
-                        {chat.title}
-                      </button>
-                      <button type="button" className="history-delete" onClick={() => onDeleteChat(chat.id)}>
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <button type="button" className="ghost side-button" onClick={onLogout}>
-                  Logout
-                </button>
-              </>
-            )}
-          </aside>
-
-          <section className="assistant-main card">
-            <div className="assistant-toolbar">
-              <button
-                type="button"
-                className="sidebar-toggle"
-                aria-expanded={sidebarOpen}
-                onClick={() => setSidebarOpen((open) => !open)}
-              >
-                {sidebarOpen ? "Hide sidebar" : "Show sidebar"}
-              </button>
-            </div>
-            <div className="messages">
-              {messages.map((message, idx) => {
-                const cleaned = cleanMarkdownAsterisks(message.content);
-                const messageKey = `${idx}:${message.role}:${message.content}`;
-                const isTyping = messageKey === typingMessageKey;
-                const animatedText = isTyping ? typingText : cleaned;
-
-                return (
-                  <article key={message.id} className={`bubble ${message.role}`}>
-                    <header>{message.role === "user" ? "You" : "Assistant"}</header>
-                    <p>
-                      {animatedText}
-                      {isTyping ? <span className="typing-caret" aria-hidden="true">|</span> : null}
-                    </p>
-                    {message.role === "assistant" && message.sources && message.sources.length > 0 ? (
-                      <ul className="sources">
-                        {message.sources.map((source, srcIdx) => (
-                          <li key={`${source}-${srcIdx}`}>{source}</li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </article>
-                );
-              })}
-            </div>
-
-            <form className="composer" onSubmit={onSubmit}>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about any document in your FarmersMark corpus..."
-                rows={3}
-              />
-              <div className="actions">
-                {loading ? (
-                  <button type="button" className="ghost" onClick={onStop}>
-                    Stop
-                  </button>
-                ) : null}
-                <button type="submit" className="cta" disabled={loading || !input.trim()}>
-                  Send
-                </button>
-              </div>
-            </form>
-          </section>
-        </main>
+        <ChatWorkspace
+          displayName={displayName}
+          isGuest={isGuest}
+          conversations={conversations}
+          activeChatId={activeChatId}
+          messages={messages}
+          input={input}
+          loading={loading}
+          canRetry={!!lastRetryablePrompt}
+          hasGuestResponses={hasGuestResponses}
+          typingMessageKey={typingMessageKey}
+          typingText={typingText}
+          theme={theme}
+          sidebarOpen={sidebarOpen}
+          onSidebarOpenChange={setSidebarOpen}
+          onToggleTheme={toggleTheme}
+          onInputChange={setInput}
+          onSubmit={onSubmit}
+          onRetry={onRetry}
+          onStop={onStop}
+          onNewChat={onNewChat}
+          onSelectChat={onSelectChat}
+          onDeleteChat={onDeleteChat}
+          onLogout={onLogout}
+          onGoHome={() => setView("landing")}
+          onOpenLogin={() => setView("login")}
+          onOpenSignup={() => setView("signup")}
+        />
       ) : null}
     </div>
   );
