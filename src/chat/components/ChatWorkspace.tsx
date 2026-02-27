@@ -130,6 +130,7 @@ export default function ChatWorkspace({
             typingMessageKey={typingMessageKey}
             typingText={typingText}
             hasGuestResponses={hasGuestResponses}
+            loading={loading}
             onSignUp={onOpenSignup}
             onSignIn={onOpenLogin}
           />

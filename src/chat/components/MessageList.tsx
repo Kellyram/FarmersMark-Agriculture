@@ -8,6 +8,7 @@ type MessageListProps = {
   typingMessageKey: string | null;
   typingText: string;
   hasGuestResponses: boolean;
+  loading: boolean;
   onSignUp: () => void;
   onSignIn: () => void;
 };
@@ -43,10 +44,12 @@ export default function MessageList({
   typingMessageKey,
   typingText,
   hasGuestResponses,
+  loading,
   onSignUp,
   onSignIn
 }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const followRef = useRef(true);
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
   const [sourceState, setSourceState] = useState<SourceAccordionState>({});
   const reducedMotion = usePrefersReducedMotion();
@@ -79,30 +82,30 @@ export default function MessageList({
 
   useEffect(() => {
     const el = scrollRef.current;
-    if (!el) return;
-    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    const isNearBottom = distanceFromBottom < 96;
-    if (isNearBottom) {
-      el.scrollTo({
-        top: el.scrollHeight,
-        behavior: reducedMotion ? "auto" : "smooth"
-      });
-    }
+    if (!el || !followRef.current) return;
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: (typingText || reducedMotion) ? "auto" : "smooth",
+    });
   }, [messages, typingText, reducedMotion]);
 
   function onScroll() {
     const el = scrollRef.current;
     if (!el) return;
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setShowJumpToLatest(distanceFromBottom > 180);
+    const farFromBottom = distanceFromBottom > 180;
+    setShowJumpToLatest(farFromBottom);
+    if (farFromBottom) followRef.current = false;
   }
 
   function jumpToLatest() {
     const el = scrollRef.current;
     if (!el) return;
+    followRef.current = true;
+    setShowJumpToLatest(false);
     el.scrollTo({
       top: el.scrollHeight,
-      behavior: reducedMotion ? "auto" : "smooth"
+      behavior: reducedMotion ? "auto" : "smooth",
     });
   }
 
@@ -125,6 +128,13 @@ export default function MessageList({
             onSignIn={onSignIn}
           />
         ))}
+        {loading && !typingMessageKey ? (
+          <div className="chat-bubble assistant" aria-label="Assistant is thinking">
+            <span className="loading-dots" aria-hidden="true">
+              <span /><span /><span />
+            </span>
+          </div>
+        ) : null}
       </div>
       {showJumpToLatest ? (
         <button type="button" className="jump-latest" onClick={jumpToLatest}>

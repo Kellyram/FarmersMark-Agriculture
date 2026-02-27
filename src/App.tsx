@@ -127,6 +127,7 @@ export default function App() {
   const [lastRetryablePrompt, setLastRetryablePrompt] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const typingTimerRef = useRef<number | null>(null);
+  const typingActiveRef = useRef(false);
   const activeChatIdRef = useRef<string | null>(null);
   const chatModeRef = useRef<ChatMode>("existing");
   const { theme, toggleTheme } = useChatTheme();
@@ -200,6 +201,7 @@ export default function App() {
       setConversations(next);
 
       if (chatModeRef.current === "draft") return;
+      if (typingActiveRef.current) return;
 
       const selectedId = activeChatIdRef.current;
       if (!selectedId) {
@@ -521,6 +523,7 @@ export default function App() {
   }
 
   function stopTypingAnimation() {
+    typingActiveRef.current = false;
     if (typingTimerRef.current !== null) {
       window.clearInterval(typingTimerRef.current);
       typingTimerRef.current = null;
@@ -540,23 +543,28 @@ export default function App() {
       window.clearInterval(typingTimerRef.current);
     }
 
+    typingActiveRef.current = true;
     setTypingMessageKey(messageKey);
     setTypingText("");
 
-    const step = Math.max(1, Math.ceil(total / 80));
+    const intervalMs = 30;
+    const durationMs = Math.min(Math.max(total * 30, 3200), 12000);
+    const ticks = Math.ceil(durationMs / intervalMs);
+    const step = Math.max(1, Math.ceil(total / ticks));
     let cursor = 0;
 
     typingTimerRef.current = window.setInterval(() => {
       cursor = Math.min(total, cursor + step);
       setTypingText(fullContent.slice(0, cursor));
       if (cursor >= total) {
+        typingActiveRef.current = false;
         if (typingTimerRef.current !== null) {
           window.clearInterval(typingTimerRef.current);
           typingTimerRef.current = null;
         }
         setTypingMessageKey(null);
       }
-    }, 18);
+    }, intervalMs);
   }
 
   return (
@@ -698,7 +706,7 @@ export default function App() {
       {view === "login" ? (
         <main className="login-wrap">
           <section className="card login-card">
-            <div className="login-intro">
+            <div className="login-intro login-photo">
               <p className="eyebrow">Secure Access</p>
               <h2>Sign In To FarmersMark Agriculture</h2>
               <p>Continue with Google or email to unlock full answers, follow-ups, and saved chat history.</p>
@@ -739,7 +747,7 @@ export default function App() {
       {view === "signup" ? (
         <main className="login-wrap">
           <section className="card login-card">
-            <div className="login-intro">
+            <div className="login-intro signup-photo">
               <p className="eyebrow">New Account</p>
               <h2>Create FarmersMark Agriculture Profile</h2>
               <p>Use one account to continue agronomy, market, and policy conversations from any device.</p>

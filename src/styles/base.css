@@ -280,9 +280,15 @@ textarea {
 }
 
 .login-intro.login-photo {
-  background-image: url("public/images/agri/login.jpg");
-  background-size: cover;
-  background-position: center;
+  background:
+    linear-gradient(rgba(12, 20, 16, 0.45), rgba(12, 20, 16, 0.45)),
+    url("/images/agri/login.jpg") center / cover no-repeat;
+}
+
+.login-intro.signup-photo {
+  background:
+    linear-gradient(rgba(12, 20, 16, 0.45), rgba(12, 20, 16, 0.45)),
+    url("/images/agri/hero-farmer.jpg") center / cover no-repeat;
 }
 
 .login-form {
