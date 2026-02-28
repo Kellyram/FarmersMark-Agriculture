@@ -1,0 +1,93 @@
+[debug] [2026-02-27T20:56:59.919Z] ----------------------------------------------------------------------
+[debug] [2026-02-27T20:56:59.923Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Kelly\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --debug
+[debug] [2026-02-27T20:56:59.924Z] CLI Version:   15.8.0
+[debug] [2026-02-27T20:56:59.924Z] Platform:      win32
+[debug] [2026-02-27T20:56:59.924Z] Node Version:  v24.13.0
+[debug] [2026-02-27T20:56:59.924Z] Time:          Fri Feb 27 2026 22:56:59 GMT+0200 (Central Africa Time)
+[debug] [2026-02-27T20:56:59.924Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-27T20:57:02.852Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-27T20:57:02.853Z] > authorizing via signed-in user (kelly.musonda@hytel.io)
+[debug] [2026-02-27T20:57:02.854Z] [iam] checking project farmersmark-agriculture for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-02-27T20:57:02.856Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:02.856Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:02.858Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/farmersmark-agriculture:testIamPermissions [none]
+[debug] [2026-02-27T20:57:02.858Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/farmersmark-agriculture:testIamPermissions  x-goog-user-project=farmersmark-agriculture
+[debug] [2026-02-27T20:57:02.859Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/farmersmark-agriculture:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-02-27T20:57:04.863Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/farmersmark-agriculture:testIamPermissions 200
+[debug] [2026-02-27T20:57:04.863Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/farmersmark-agriculture:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-02-27T20:57:04.864Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:04.865Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:04.865Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/farmersmark-agriculture [none]
+[debug] [2026-02-27T20:57:05.625Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/farmersmark-agriculture 200
+[debug] [2026-02-27T20:57:05.626Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/farmersmark-agriculture {"projectId":"farmersmark-agriculture","projectNumber":"1030666165439","displayName":"FarmersMark-Agriculture","name":"projects/farmersmark-agriculture","resources":{"hostingSite":"farmersmark-agriculture"},"state":"ACTIVE","etag":"1_108ccdaf-4ffc-491f-95a3-1a059ccd9391"}
+[info] 
+[info] === Deploying to 'farmersmark-agriculture'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-02-27T20:57:05.633Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:05.636Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:05.636Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions [none]
+[debug] [2026-02-27T20:57:05.639Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-02-27T20:57:08.663Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions 200
+[debug] [2026-02-27T20:57:08.663Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions {"name":"projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[farmersmark-agriculture]: beginning deploy... 
+[info] i  hosting[farmersmark-agriculture]: found 20 files in dist 
+[debug] [2026-02-27T20:57:08.688Z] [hosting] uploading with 200 concurrency
+[debug] [2026-02-27T20:57:08.734Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:08.735Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:08.737Z] [hosting] hash cache [ZGlzdA] stored for 20 files
+[debug] [2026-02-27T20:57:08.739Z] [hosting][hash queue][FINAL] {"max":40,"min":1,"avg":3.35,"active":0,"complete":20,"success":20,"errored":0,"retried":0,"total":20,"elapsed":48}
+[debug] [2026-02-27T20:57:08.742Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135:populateFiles [none]
+[debug] [2026-02-27T20:57:08.742Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135:populateFiles {"files":{"/images/agri/what-we-do.webp":"0ea2e48ffdf7f59e1f36dc19b4b7cc75054efd654572fcc58080c1f8b2f3ddf8","/images/agri/testimonial-right.jpg":"772e35ac2322d5b901754ce69571e2182279f151d5a8e105a6b44825a2b6f55e","/images/agri/strip-5.jpg":"c1ae8f547bf8776ed60c62f8d3b6682a5808185a39d1f98e0ffbcb5ea27a7241","/images/agri/strip-4.jpg":"2e8554d90599950f4768946f6b5d7da05ecdb6e8db322c5c0592ad9f0d1fd638","/images/agri/strip-3.png":"b2328016e4398fb55e45c091ac80b792b101642b071aad724685c3dbd85c4583","/images/agri/strip-2.png":"054efc6079ac1769b6c225f19e7f486849c5909908edfd5e087596e81f4cf533","/images/agri/strip-1.png":"9bb542fbb7df84907cbe1707c7f936188527e2cad0d5a22844b2efca94efcad3","/images/agri/quote-band-bg.jpg":"40991a68490662c7c4ed5bd8b047cc0d542048a21f82eee881023b3e72d9eaa8","/images/agri/pexels-tomfisk-1595104.jpg":"bd8eff5409dd42856c083a0c008a758b4764905e36b172577ddce5b2d02ca8f3","/images/agri/pexels-nicolasveithen-1719669.jpg":"1f711066e7c5c67d7e5af6630dabd633a47571805e3583d8d7d5f4300e5ea851","/images/agri/pexels-alejandro-barron-21404-96715.jpg":"b651168bb8bea20787f335858637e3b5f910d33825ddc27464a000a3331c3d34","/images/agri/login.jpg":"16b9617e498b91cf562844c2be641cf556ce8d88fd35aa957ccb50cf1f2b2eaa","/images/agri/istockphoto-1138863600-2048x2048.webp":"184b6268052c4e30f5598f43c66abaee9b366867ba1538537960ae9e8cff4078","/images/agri/hero-farmer.jpg":"5f1f769ba61b85afb7e48975fde64191b4ba1061efbcaadfb6a2ebf03888b8d3","/images/agri/hero-cornfield.jpg":"3c1a366d4498acd17b170459c21650a0d58169f4eb58438ee916db3a75b4e94a","/images/agri/culture-left.jpg":"b5617c721d3aa6ac4fd79902ba1e40b1901da2088100b9dee43f49baf5894ee7","/images/agri/background.jpg":"3aa32aff37ddb10b5653e9a843704e66325be1b2ac49973a719f40d903c0e519","/index.html":"a0333b91aed01bd45be82d0d540e344a4b38a2cb7c9066186a028416912e67a4","/assets/index-BGsqN8MB.css":"2cdd747f7a32ac08cfd3ab67e26f65bc8c95b7a61bde6475ca8b1b1c1a313fd9","/assets/index-BbkFzLBY.js":"a8a105093edbcc91e96fd2e2ad4cc1ce9e73a855bb8e9930434cbb28b8db2812"}}
+[debug] [2026-02-27T20:57:10.221Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135:populateFiles 200
+[debug] [2026-02-27T20:57:10.222Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/farmersmark-agriculture/versions/a638be948af7d135/files"}
+[debug] [2026-02-27T20:57:10.223Z] [hosting][populate queue][FINAL] {"max":1488,"min":1488,"avg":1488,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1489}
+[debug] [2026-02-27T20:57:10.223Z] [hosting] uploads queued: 0
+[debug] [2026-02-27T20:57:10.224Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1772225830224}
+[info] i  hosting: upload complete 
+[info] +  hosting[farmersmark-agriculture]: file upload complete 
+[debug] [2026-02-27T20:57:10.226Z] [hosting] deploy completed after 1555ms
+[debug] [2026-02-27T20:57:10.227Z] [
+  {
+    "config": {
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "farmersmark-agriculture"
+    },
+    "version": "projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135"
+  }
+]
+[info] i  hosting[farmersmark-agriculture]: finalizing version... 
+[debug] [2026-02-27T20:57:10.233Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:10.234Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:10.235Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions/a638be948af7d135 updateMask=status%2Cconfig
+[debug] [2026-02-27T20:57:10.239Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions/a638be948af7d135 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2026-02-27T20:57:11.973Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions/a638be948af7d135 200
+[debug] [2026-02-27T20:57:11.974Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/versions/a638be948af7d135 {"name":"projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-02-27T20:58:32.994298Z","createUser":{"email":"kelly.musonda@hytel.io"},"finalizeTime":"2026-02-27T20:58:37.206689Z","finalizeUser":{"email":"kelly.musonda@hytel.io"}}
+[debug] [2026-02-27T20:57:11.974Z] [hosting] finalized version for farmersmark-agriculture:[object Object]
+[info] +  hosting[farmersmark-agriculture]: version finalized 
+[info] i  hosting[farmersmark-agriculture]: releasing new version... 
+[debug] [2026-02-27T20:57:11.975Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:11.975Z] Checked if tokens are valid: true, expires at: 1772229339766
+[debug] [2026-02-27T20:57:11.976Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/channels/live/releases versionName=projects%2F1030666165439%2Fsites%2Ffarmersmark-agriculture%2Fversions%2Fa638be948af7d135
+[debug] [2026-02-27T20:57:11.976Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/channels/live/releases {}
+[debug] [2026-02-27T20:57:13.683Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/channels/live/releases 200
+[debug] [2026-02-27T20:57:13.684Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/farmersmark-agriculture/channels/live/releases {"name":"projects/1030666165439/sites/farmersmark-agriculture/channels/live/releases/1772225917938000","version":{"name":"projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-02-27T20:58:32.994298Z","createUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"},"finalizeTime":"2026-02-27T20:58:37.206689Z","finalizeUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"}},"type":"DEPLOY","releaseTime":"2026-02-27T20:58:37.938Z","releaseUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"}}
+[debug] [2026-02-27T20:57:13.685Z] [hosting] release: {"name":"projects/1030666165439/sites/farmersmark-agriculture/channels/live/releases/1772225917938000","version":{"name":"projects/1030666165439/sites/farmersmark-agriculture/versions/a638be948af7d135","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-02-27T20:58:32.994298Z","createUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"},"finalizeTime":"2026-02-27T20:58:37.206689Z","finalizeUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"}},"type":"DEPLOY","releaseTime":"2026-02-27T20:58:37.938Z","releaseUser":{"email":"kelly.musonda@hytel.io","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocJduE1ZCp-Tun0DRw2mUy_p20us8OzFshLfaS8RAvWqS2haPg=mo"}}
+[info] +  hosting[farmersmark-agriculture]: release complete 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/farmersmark-agriculture/overview
+[info] Hosting URL: https://farmersmark-agriculture.web.app
