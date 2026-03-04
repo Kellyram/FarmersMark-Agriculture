@@ -1,0 +1,227 @@
+[debug] [2026-02-23T03:36:56.757Z] ----------------------------------------------------------------------
+[debug] [2026-02-23T03:36:56.762Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\MKAY\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --project farmersmark-agriculture
+[debug] [2026-02-23T03:36:56.762Z] CLI Version:   15.6.0
+[debug] [2026-02-23T03:36:56.762Z] Platform:      win32
+[debug] [2026-02-23T03:36:56.763Z] Node Version:  v24.13.0
+[debug] [2026-02-23T03:36:56.763Z] Time:          Sun Feb 22 2026 19:36:56 GMT-0800 (Pacific Standard Time)
+[debug] [2026-02-23T03:36:56.763Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-23T03:36:59.599Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-23T03:36:59.600Z] > authorizing via signed-in user (mwiza.kamanga@hytel.io)
+[debug] [2026-02-23T03:36:59.780Z] java version "24" 2025-03-18
+
+[debug] [2026-02-23T03:36:59.781Z] Java(TM) SE Runtime Environment (build 24+36-3646)
+Java HotSpot(TM) 64-Bit Server VM (build 24+36-3646, mixed mode, sharing)
+
+[debug] [2026-02-23T03:36:59.800Z] Parsed Java major version: 24
+[info] i  emulators: Starting emulators: functions, firestore, hosting, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions, firestore, hosting, extensions"}}
+[debug] [2026-02-23T03:36:59.804Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:36:59.804Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:36:59.804Z] > refreshing access token with scopes: []
+[debug] [2026-02-23T03:36:59.807Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-23T03:36:59.807Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-23T03:37:00.367Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-02-23T03:37:00.367Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] !!  extensions: Unable to look up project number for farmersmark-agriculture.
+ If this is a real project, ensure that you are logged in and have access to it.
+ If this is a fake project, please use a project ID starting with 'demo-' to skip production calls.
+ Continuing with a fake project number - secrets and other features that require production access may behave unexpectedly. {"metadata":{"emulator":{"name":"extensions"},"message":"Unable to look up project number for farmersmark-agriculture.\n If this is a real project, ensure that you are logged in and have access to it.\n If this is a fake project, please use a project ID starting with 'demo-' to skip production calls.\n Continuing with a fake project number - secrets and other features that require production access may behave unexpectedly."}}
+[debug] [2026-02-23T03:37:00.395Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.395Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.395Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.395Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.396Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-02-23T03:37:00.407Z] Write emulator hub locator at C:\Users\MKAY\AppData\Local\Temp\hub-farmersmark-agriculture.json
+[debug] [2026-02-23T03:37:00.425Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2026-02-23T03:37:00.441Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.441Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.442Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-02-23T03:37:00.442Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, database, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, auth, database, pubsub, storage, dataconnect\u001b[22m"}}
+[warn] !  functions: Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful! {"metadata":{"emulator":{"name":"functions"},"message":"Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful!"}}
+[debug] [2026-02-23T03:37:18.463Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:18.463Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:18.463Z] > refreshing access token with scopes: []
+[debug] [2026-02-23T03:37:18.464Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-23T03:37:18.464Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-23T03:37:18.992Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-02-23T03:37:18.992Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:18.993Z] Failed to get Admin SDK config for farmersmark-agriculture, falling back to cache Failed to get Admin SDK for Firebase project farmersmark-agriculture. Please make sure the project exists and your account has permission to access it. {"name":"FirebaseError","children":[],"exit":2,"message":"Failed to get Admin SDK for Firebase project farmersmark-agriculture. Please make sure the project exists and your account has permission to access it.","original":{"name":"FirebaseError","children":[],"exit":1,"message":"Authentication Error: Your credentials are no longer valid. Please run \u001b[1mfirebase login --reauth\u001b[22m\n\nFor CI servers and headless environments, generate a new token with \u001b[1mfirebase login:ci\u001b[22m","status":500},"status":500}
+[debug] [2026-02-23T03:37:19.017Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-02-23T03:37:19.017Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-02-23T03:37:19.017Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","C:\\Users\\MKAY\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.20.2.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","farmersmark-agriculture","--rules","C:\\projects\\FarmersMark-Agriculture\\firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"C:\\\\Users\\\\MKAY\\\\.cache\\\\firebase\\\\emulators\\\\cloud-firestore-emulator-v1.20.2.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"farmersmark-agriculture\",\"--rules\",\"C:\\\\projects\\\\FarmersMark-Agriculture\\\\firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[info] +  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-02-23T03:37:22.565Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:22.565Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:22.565Z] > refreshing access token with scopes: []
+[debug] [2026-02-23T03:37:22.566Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-23T03:37:22.566Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-23T03:37:22.826Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-02-23T03:37:22.826Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:22.827Z] Failed to list hosting sites
+[debug] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:22.828Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:22.828Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:22.828Z] > refreshing access token with scopes: []
+[debug] [2026-02-23T03:37:22.828Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-23T03:37:22.828Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-23T03:37:23.088Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-02-23T03:37:23.088Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:23.090Z] fetchWebSetup error: FirebaseError: Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[warn] !  hosting: Using web app configuration from cache. 
+[debug] [2026-02-23T03:37:23.093Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:23.093Z] Checked if tokens are valid: false, expires at: 1771773256176
+[debug] [2026-02-23T03:37:23.093Z] > refreshing access token with scopes: []
+[debug] [2026-02-23T03:37:23.094Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-23T03:37:23.094Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-23T03:37:23.354Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2026-02-23T03:37:23.355Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:23.356Z] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-02-23T03:37:23.357Z] Specified "public" directory "web/dist" does not exist; Deploy to Hosting site "farmersmark-agriculture" may fail or be empty.
+[info] i  hosting[farmersmark-agriculture]: Serving hosting files from: web/dist {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mweb/dist\u001b[22m"}}
+[info] +  hosting[farmersmark-agriculture]: Local server: http://127.0.0.1:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5000\u001b[22m\u001b[24m"}}
+[debug] [2026-02-23T03:37:23.401Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "C:\projects\FarmersMark-Agriculture\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\projects\\FarmersMark-Agriculture\\functions\" for Cloud Functions..."}}
+[debug] [2026-02-23T03:37:23.417Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] !  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-02-23T03:37:25.981Z] > [functions] package.json contents: {
+  "name": "farmersmark-functions",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/index.js",
+  "packageManager": "pnpm@10.4.0",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib",
+    "lint": "eslint --ext .ts src",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.1",
+    "firebase-functions": "^6.1.0",
+    "google-auth-library": "^9.15.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^9.17.0",
+    "eslint-config-google": "^0.14.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2"
+  }
+}
+[error] !!  functions: Failed to load function definition from source: FirebaseError: There was an error reading functions\package.json:
+
+ functions\lib\index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading functions\\package.json:\n\n functions\\lib\\index.js does not exist, can't deploy Cloud Functions"}}
+[info] i  functions: Watching "C:\projects\FarmersMark-Agriculture\ai-engine" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\projects\\FarmersMark-Agriculture\\ai-engine\" for Cloud Functions..."}}
+[debug] [2026-02-23T03:37:25.985Z] Customer code is not Node
+[debug] [2026-02-23T03:37:25.986Z] Validating python source
+[debug] [2026-02-23T03:37:25.986Z] Building python source
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2026-02-23T03:37:25.991Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-02-23T03:37:26.002Z] Running command with virtualenv: command="C:\projects\FarmersMark-Agriculture\ai-engine\venv\Scripts\activate.bat", args=["","&&","python.exe","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2026-02-23T03:37:26.239Z] stdout: C:\projects\FarmersMark-Agriculture\ai-engine\venv\Lib\site-packages\firebase_functions
+
+[debug] [2026-02-23T03:37:26.251Z] Running admin server with args: ["python.exe","\"C:\\projects\\FarmersMark-Agriculture\\ai-engine\\venv\\Lib\\site-packages\\firebase_functions\\private\\serving.py\""] and env: {"GCLOUD_PROJECT":"farmersmark-agriculture","K_REVISION":"1","PORT":"80","GOOGLE_CLOUD_QUOTA_PROJECT":"farmersmark-agriculture","FUNCTIONS_EMULATOR":"true","TZ":"UTC","FIREBASE_DEBUG_MODE":"true","FIREBASE_DEBUG_FEATURES":"{\"skipTokenVerification\":true,\"enableCors\":true}","FIREBASE_EMULATOR_HUB":"127.0.0.1:4400","FIRESTORE_EMULATOR_HOST":"127.0.0.1:8080","FIREBASE_FIRESTORE_EMULATOR_ADDRESS":"127.0.0.1:8080","CLOUD_EVENTARC_EMULATOR_HOST":"http://127.0.0.1:9299","CLOUD_TASKS_EMULATOR_HOST":"127.0.0.1:9499","FIREBASE_CONFIG":"{\"storageBucket\":\"farmersmark-agriculture.firebasestorage.app\",\"projectId\":\"farmersmark-agriculture\"}","ADMIN_PORT":"8081"} in C:\projects\FarmersMark-Agriculture\ai-engine
+[debug] [2026-02-23T03:37:26.251Z] Running command with virtualenv: command="C:\projects\FarmersMark-Agriculture\ai-engine\venv\Scripts\activate.bat", args=["","&&","python.exe","\"C:\\projects\\FarmersMark-Agriculture\\ai-engine\\venv\\Lib\\site-packages\\firebase_functions\\private\\serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
+[error] 127.0.0.1 - - [23/Feb/2026 03:37:32] "GET /__/functions.yaml HTTP/1.1" 200 -
+
+[debug] [2026-02-23T03:37:32.563Z] Got response from /__/functions.yaml endpoints:
+  analyzeDocument:
+    availableMemoryMb: null
+    callableTrigger: {}
+    concurrency: null
+    entryPoint: analyzeDocument
+    ingressSettings: null
+    labels:
+      deployment-callable: 'true'
+    maxInstances: null
+    minInstances: null
+    platform: gcfv2
+    secretEnvironmentVariables: []
+    serviceAccountEmail: null
+    timeoutSeconds: null
+params: []
+requiredAPIs: []
+specVersion: v1alpha1
+
+[error] 127.0.0.1 - - [23/Feb/2026 03:37:32] "GET /__/quitquitquit HTTP/1.1" 200 -
+
+[info] +  functions: Loaded functions definitions from source: analyzeDocument. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: analyzeDocument."}}
+[info] +  functions[us-central1-analyzeDocument]: http function initialized (http://127.0.0.1:5001/farmersmark-agriculture/us-central1/analyzeDocument). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/farmersmark-agriculture/us-central1/analyzeDocument)."}}
+[debug] [2026-02-23T03:37:32.626Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator   │ Host:Port      │ View in Emulator UI              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Functions  │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore  │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Hosting    │ 127.0.0.1:5000 │ n/a                              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/extensions │
+└────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
